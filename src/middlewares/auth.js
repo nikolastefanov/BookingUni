@@ -3,11 +3,14 @@ const jwt=require('jsonwebtoken');
 const userService=require('../services/user');
 const {TOKEN_SECRET,COOKIE_NAME}=require('../config');
 
-function init(){
+
     //TODO parse jwt
-    return function(req,res,next){
+ module.expors=(req,res,next)=>{
         
         //attach functions to contex
+
+    if(parseToken(req,res)){
+
         req.auth={
 
             async register(username,password){
@@ -27,7 +30,8 @@ function init(){
         
         next();
     };
-};
+}
+
 
 
 async function register(username,password){
@@ -41,7 +45,9 @@ async function register(username,password){
         throw new Error('User is taken!');
     }
 
-    const user=await userService.createUser(username,password);
+    const hashedPassword=await bcrypt.hash(password,10);
+
+    const user=await userService.createUser(username,hashedPassword);
 
     return generateToken(user);
 };
@@ -70,4 +76,31 @@ function generateToken(userData){
         _id:userData._id,
         username:userData.usename
     },TOKEN_SECRET);
+}
+
+
+function parseToken(req,res){
+
+    const token=req.cookies[COOKIE_NAME];
+  if(token){
+    try {    
+
+            const userData=jwt.verify(token,TOKEN_SECRET);
+
+            req.user=userData;
+
+            res.locals.user = userData;
+        
+    } catch (err) {
+        
+        console.log(err);
+
+        res.clearCookie(COOKIE_NAME);
+
+        res.redirect('/auth/login');
+
+        return false;
+    }
+  }
+    return true;
 }
