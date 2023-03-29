@@ -1,11 +1,13 @@
-const bcrypt=require('bcrypt');
+const {bcrypt}=require('bcrypt');
 const jwt=require('jsonwebtoken');
 const userService=require('../services/user');
-const {TOKEN_SECRET,COOKIE_NAME}=require('../config');
+const { TOKEN_SECRET, COOKIE_NAME } = require('../config')
+
 
 
     //TODO parse jwt
- module.expors=(req,res,next)=>{
+
+ async function authMiddleware(req,res,next){
         
         //attach functions to contex
 
@@ -26,10 +28,11 @@ const {TOKEN_SECRET,COOKIE_NAME}=require('../config');
            logout(){
                res.clearCookie(COOKIE_NAME);
            }
+
         };
-        
-        next();
+          next();
     };
+    
 }
 
 
@@ -81,7 +84,8 @@ function generateToken(userData){
 
 function parseToken(req,res){
 
-    const token=req.cookies[COOKIE_NAME];
+    const token = req.cookies[COOKIE_NAME];
+
   if(token){
     try {    
 
@@ -103,4 +107,9 @@ function parseToken(req,res){
     }
   }
     return true;
+}
+
+
+module.exports={
+    authMiddleware
 }

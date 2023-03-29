@@ -1,9 +1,7 @@
-
-const express=require('express');
-const cookieParser=require('cookie-parser');
+const express = require('express');
+const cookieParser = require('cookie-parser')
 const{ engine }=require('express-handlebars');
-const authMiddleware = require('../middlewares/auth');
-
+const {authMiddleware} = require('../middlewares/auth')
 
 module.exports=(app)=>{
 
