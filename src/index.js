@@ -11,7 +11,7 @@ async function start() {
     await databaseConfig(app);
     expressConfig(app);
     routesConfig(app);
-    app.get('/', (req, res) => res.send('It works!'));
+    //app.get('/', (req, res) => res.send('It works!'));
     app.listen(PORT, () => {
         console.log(`Listening on port ${PORT}...`);
     })

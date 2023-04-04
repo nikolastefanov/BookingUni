@@ -11,8 +11,9 @@ router.get('/register', isGuest(), (req, res) => {
 router.post(
     '/register',
     isGuest(),
-    //body('email', 'Invalid email').isEmail(),
+    body('email', 'Invalid email').isEmail(),
     body('username').isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
+    body('password').isLength({min:3}).withMessage('Password > 5 simbols').bail().matches(/[a-zA-Z0-9]/).withMessage('Password contains only english letters and numbers'),
     body('rePass').custom((value, { req }) => {
         if (value != req.body.password) {
             throw new Error('Passwords don\'t match')
@@ -28,7 +29,7 @@ router.post(
                 const message = errors.map(e => e.msg).join('\n')
                 throw new Error(message);
             }
-            await req.auth.register(req.body.username, /*req.body.email,*/ req.body.password)
+            await req.auth.register(req.body.username, req.body.email, req.body.password)
             res.redirect('/')
         } catch (err) {
             console.log(err.message)
@@ -36,7 +37,7 @@ router.post(
                 errors: err.message.split('\n'),
                 userData: {
                     username: req.body.username,
-                    //email: req.body.email
+                    email: req.body.email
                 }
             }
             res.render('user/register', ctx)
